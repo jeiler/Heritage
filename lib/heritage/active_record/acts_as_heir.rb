@@ -13,7 +13,7 @@ module Heritage
         class_attribute :_predecessor_klass, :_predecessor_symbol
         self._predecessor_symbol = predecessor_symbol
         if options[:class_name].present? then
-          self._predecessor_klass = options[:class]_name].to_s.split(/::/).reduce(Object){ |cls, c| cls.const_get(c) }
+          self._predecessor_klass = options[:class_name].to_s.split(/::/).reduce(Object){ |cls, c| cls.const_get(c) }
         else 
           self._predecessor_klass = Object.const_get(predecessor_symbol.to_s.camelize)
         end
