@@ -2,19 +2,23 @@ module Heritage
   module ActiveRecord
     module ActsAsHeir
       
-      def child_of(parent_symbol)
-        acts_as_heir_of(parent_symbol)
+      def child_of(parent_symbol, options = {})
+        acts_as_heir_of(parent_symbol, options)
       end
 
-      def acts_as_heir_of(predecessor_symbol)
+      def acts_as_heir_of(predecessor_symbol, options = {})
         extend ClassMethods
         include InstanceMethods
 
         class_attribute :_predecessor_klass, :_predecessor_symbol
         self._predecessor_symbol = predecessor_symbol
-        self._predecessor_klass = Object.const_get(predecessor_symbol.to_s.capitalize)
+        if options[:class_name].present? then
+          self._predecessor_klass = options[:class]_name].to_s.split(/::/).reduce(Object){ |cls, c| cls.const_get(c) }
+        else 
+          self._predecessor_klass = Object.const_get(predecessor_symbol.to_s.camelize)
+        end
 
-        has_one :predecessor, :as => :heir, :class_name => predecessor_symbol.to_s.capitalize, :autosave => true, :dependent => :destroy
+        has_one :predecessor, :as => :heir, :class_name => self._predecessor_klass.name, :autosave => true, :dependent => :destroy
 
         alias_method_chain :predecessor, :build
 
